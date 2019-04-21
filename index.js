@@ -1,15 +1,29 @@
-const config = {
+var config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
-    backgroundColor: "#000",
-    parent: "game-container",
-    pixelArt: true,
-    scene: DungeonScene,
     physics: {
-        default: "arcade",
-        arcade: {
-            gravity: { y: 0 }
-        }
+        gravity: { y: 500 },
+        debug: false
+    },
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
     }
 };
+
+
+const game = new Phaser.Game(config);
+
+function preload() {
+    this.load.image('stefen', './Art/sprites/Stefen2.jpg');
+}
+
+function create() {
+    this.add.image(400, 300, 'stefen');
+}
+
+function update() {
+    console.log('blah');
+}
