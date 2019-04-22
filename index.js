@@ -1,10 +1,17 @@
+let screenWidth = 800;
+let screenHeight = 600;
+let tileSize = 32;
+
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: screenWidth,
+    height: screenHeight,
     physics: {
-        gravity: { y: 500 },
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 500 },
         debug: false
+        }
     },
     scene: {
         preload: preload,
@@ -16,14 +23,21 @@ var config = {
 
 const game = new Phaser.Game(config);
 
+let platforms;
+
 function preload() {
     this.load.image('sky', './Art/backGrounds/sky.png');
+    this.load.image('ground', './Art/tiles/PlaceHolder/testTile.png')
     this.load.spritesheet('megaMan', './Art/sprites/Placeholder/megaManRun.png',
         {frameWidth: 24, frameHeight: 24});
 }
 
 function create() {
+    platforms = this.physics.add.staticGroup();
+
     this.add.image(400, 300, 'sky');
+
+    platforms.create(tileSize, screenHeight - tileSize, 'ground');
 }
 
 function update() {
