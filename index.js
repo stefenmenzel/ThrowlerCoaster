@@ -24,6 +24,7 @@ var config = {
 const game = new Phaser.Game(config);
 
 let platforms;
+let ground;
 
 function preload() {
     this.load.image('sky', './Art/backGrounds/sky.png');
@@ -37,7 +38,10 @@ function create() {
 
     this.add.image(400, 300, 'sky');
 
-    platforms.create(tileSize, screenHeight - tileSize, 'ground');
+    ground = this.add.tileSprite(tileSize/2, screenHeight - (tileSize/2), 1600, 32, 'ground');
+
+    
+    //platforms.create(tileSize, screenHeight - tileSize, 'ground');
 }
 
 function update() {
