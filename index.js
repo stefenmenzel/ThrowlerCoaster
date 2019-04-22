@@ -17,13 +17,14 @@ var config = {
 const game = new Phaser.Game(config);
 
 function preload() {
-    this.load.image('stefen', './Art/sprites/Stefen2.jpg');
+    this.load.image('sky', './Art/backGrounds/sky.png');
+    this.load.spritesheet('megaMan', './Art/sprites/Placeholder/megaManRun.png',
+        {frameWidth: 24, frameHeight: 24});
 }
 
 function create() {
-    this.add.image(400, 300, 'stefen');
+    this.add.image(400, 300, 'sky');
 }
 
 function update() {
-    console.log('blah');
 }
