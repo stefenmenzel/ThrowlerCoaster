@@ -27,6 +27,8 @@ const game = new Phaser.Game(config);
 let platforms;
 let ground;
 
+let jumpIsReady = true;
+
 function preload() {
     this.load.image('sky', './Art/backGrounds/sky.png');
     this.load.image('ground', './Art/tiles/PlaceHolder/testTile.png')
@@ -35,7 +37,8 @@ function preload() {
 }
 
 function create() {
-
+    
+    Qkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
     platforms = this.physics.add.staticGroup();
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -46,8 +49,15 @@ function create() {
     platforms.add(ground);
     //platforms.create(tileSize, screenHeight - tileSize, 'ground');
     player = this.physics.add.sprite(100, 400, 'megaMan');
+    player2 = this.physics.add.sprite(150,400, 'megaMan');    
+    currentPlayer = player;
+    
     player.setBounce(0);
     player.setCollideWorldBounds(true);
+
+    player2.setBounce(0);
+    player.setCollideWorldBounds(true);
+
     this.anims.create({
         key: 'run',
         frames: this.anims.generateFrameNumbers('megaMan', { start: 0, end: 3 }),
@@ -60,34 +70,65 @@ function create() {
         frameRate: 20
     });
     player.body.setGravityY(gravityY);
+    player2.body.setGravityY(gravityY);
 
     this.physics.add.collider(player, platforms);
+    this.physics.add.collider(player2, platforms);
 }
 
 function update() {
+
+    // console.log('currentplayer is player1?', currentPlayer == player);    
+
+    
+    if (Phaser.Input.Keyboard.JustDown(Qkey))
+    {
+        if(currentPlayer == player)
+        {
+            currentPlayer = player2;
+            full_stop(player);
+        }
+        else
+        {
+            currentPlayer = player;
+            full_stop(player2);
+        }
+        console.log('QUEUE');
+    }
+
     if (cursors.left.isDown) {
-        player.setVelocityX(-160);
-        player.anims.play('run', true);
+        currentPlayer.setVelocityX(-160);
+        currentPlayer.anims.play('run', true);
+        currentPlayer.flipX = true;
     }
     else if (cursors.right.isDown) {
-        player.setVelocityX(160);
-        player.anims.play('run', true);
+        currentPlayer.setVelocityX(160);
+        currentPlayer.anims.play('run', true);
+        currentPlayer.flipX = false;
     }
     else {
-        player.setVelocityX(0);
-        player.anims.play('idle');
+        currentPlayer.setVelocityX(0);
+        currentPlayer.anims.play('idle');
     }
 
-    if (cursors.up.isDown && player.body.touching.down) {
-        player.setVelocityY(-300);
+    if (cursors.up.isDown && currentPlayer.body.touching.down && jumpIsReady) {
+        jumpIsReady = false;
+        currentPlayer.setVelocityY(-300);
     }
 
-    if (player.velocityY < 0) {
-        player.setGravityY(gravityY * 2);
-        console.log('fast drop');
-        console.log('player gravity:', player.gravityY);
+    if(!cursors.up.isDown && currentPlayer.body.touching.down){
+        jumpIsReady = true;
+    }
+
+    if (currentPlayer.body.velocity.y > 0) {
+        currentPlayer.body.setGravityY(gravityY * 2);
     }
     else {
-        player.setGravityY(gravityY);
+        currentPlayer.setGravityY(gravityY);
     }
+}
+
+function full_stop(playerToStop){
+    playerToStop.setVelocityX(0);
+
 }
