@@ -156,8 +156,6 @@ function update() {
         console.log('otherplayer is onwall');
         set_Regular_Mode(otherPlayer);
     }
-    console.log('OTHER PLAYER Y VELOCITY:', otherPlayer.body.velocity.y)
-    console.log('OTHER PLAYER CURRENT GRAVITY:', otherPlayer.body.gravity);
 }
 
 //this will fully stop the player...used when switching between players...will likely eventually go away.
