@@ -2,6 +2,7 @@ let screenWidth = 800;
 let screenHeight = 600;
 let tileSize = 32;
 let gravityY = 500;
+let throwForce = 300;
 
 var config = {
     type: Phaser.AUTO,
@@ -39,6 +40,7 @@ function preload() {
 function create() {
     
     Qkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+    Ekey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
     platforms = this.physics.add.staticGroup();
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -51,6 +53,7 @@ function create() {
     player = this.physics.add.sprite(100, 400, 'megaMan');
     player2 = this.physics.add.sprite(150,400, 'megaMan');    
     currentPlayer = player;
+    otherPlayer = player2;
     
     player.setBounce(0);
     player.setCollideWorldBounds(true);
@@ -86,14 +89,22 @@ function update() {
         if(currentPlayer == player)
         {
             currentPlayer = player2;
+            otherPlayer = player;
             full_stop(player);
         }
         else
         {
             currentPlayer = player;
+            otherPlayer = player2;
             full_stop(player2);
         }
         console.log('QUEUE');
+    }
+
+    if(Phaser.Input.Keyboard.JustDown(Ekey))
+    {
+        console.log('finna throw');
+        otherPlayer.setVelocity(.707 * throwForce, .707 * -throwForce)
     }
 
     if (cursors.left.isDown) {
