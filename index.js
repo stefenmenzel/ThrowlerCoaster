@@ -3,6 +3,7 @@ let screenHeight = 600;
 let tileSize = 32;
 let gravityY = 500;
 let throwForce = 300;
+let horMov = 0;
 
 var config = {
     type: Phaser.AUTO,
@@ -59,7 +60,7 @@ function create() {
     player.setCollideWorldBounds(true);
 
     player2.setBounce(0);
-    player.setCollideWorldBounds(true);
+    player2.setCollideWorldBounds(true);
 
     this.anims.create({
         key: 'run',
@@ -83,7 +84,7 @@ function update() {
 
     // console.log('currentplayer is player1?', currentPlayer == player);    
 
-    
+    //This is testing the switch ability that will be important in this game...the player won't have much control over switching other than it'll automatically switch when a character is thrown
     if (Phaser.Input.Keyboard.JustDown(Qkey))
     {
         if(currentPlayer == player)
@@ -100,46 +101,79 @@ function update() {
         }
         console.log('QUEUE');
     }
+    //end switch test 
 
+    //this is testing the throw ability...currently only throwing at a 45 degree angle up and to the right
     if(Phaser.Input.Keyboard.JustDown(Ekey))
     {
         console.log('finna throw');
+        set_Throw_Mode(otherPlayer);
         otherPlayer.setVelocity(.707 * throwForce, .707 * -throwForce)
     }
+    //end throw test.
 
+    //this is a sequence of conditionals that moves the player left and riht
     if (cursors.left.isDown) {
+        // horMov = -1;
         currentPlayer.setVelocityX(-160);
         currentPlayer.anims.play('run', true);
         currentPlayer.flipX = true;
     }
     else if (cursors.right.isDown) {
+        // horMov = 1;
         currentPlayer.setVelocityX(160);
         currentPlayer.anims.play('run', true);
         currentPlayer.flipX = false;
     }
     else {
+        // horMov = 0;
         currentPlayer.setVelocityX(0);
         currentPlayer.anims.play('idle');
     }
+    //end moving left and right
 
+    //this allows the player to jump under certiain conditions.
     if (cursors.up.isDown && currentPlayer.body.touching.down && jumpIsReady) {
         jumpIsReady = false;
         currentPlayer.setVelocityY(-300);
     }
 
+    //this makes the player let go of jump button before being able to jump again.
     if(!cursors.up.isDown && currentPlayer.body.touching.down){
         jumpIsReady = true;
     }
 
+    //this set of conditionals determines the players fall speed...after the apex of the jump gravity doubles, to make the jump more mario-y
     if (currentPlayer.body.velocity.y > 0) {
         currentPlayer.body.setGravityY(gravityY * 2);
     }
     else {
         currentPlayer.setGravityY(gravityY);
     }
+
+    //this is a rough test that goes along with the throw...attempting to take away gravity after being thrown until the thrown player runs into something.
+    if(otherPlayer.body.onWall() || otherPlayer.body.onCeiling()){
+        console.log('otherplayer is onwall');
+        set_Regular_Mode(otherPlayer);
+    }
+    console.log('OTHER PLAYER Y VELOCITY:', otherPlayer.body.velocity.y)
+    console.log('OTHER PLAYER CURRENT GRAVITY:', otherPlayer.body.gravity);
 }
 
+//this will fully stop the player...used when switching between players...will likely eventually go away.
 function full_stop(playerToStop){
     playerToStop.setVelocityX(0);
 
+}
+
+//set gravity to 0 so the throwee can fly
+function set_Throw_Mode(otherPlayer){
+    console.log('setting throw mode');
+    otherPlayer.body.setAllowGravity(false);
+}
+
+//set the gravity back to normal so the throwee can land.
+function set_Regular_Mode(otherPlayer){
+    console.log('setting regular mode');
+    otherPlayer.body.setAllowGravity(true);
 }
