@@ -30,6 +30,9 @@ let platforms;
 let ground;
 
 let jumpIsReady = true;
+let aimMode = false;
+let aimAngle = 0;
+let aimRotateSpeed = 1;
 
 function preload() {
     this.load.image('sky', './Art/backGrounds/sky.png');
@@ -42,6 +45,7 @@ function create() {
     
     Qkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
     Ekey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    Shiftkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
     platforms = this.physics.add.staticGroup();
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -107,23 +111,46 @@ function update() {
     if(Phaser.Input.Keyboard.JustDown(Ekey))
     {
         console.log('finna throw');
-        set_Throw_Mode(otherPlayer);
-        otherPlayer.setVelocity(.707 * throwForce, .707 * -throwForce)
+        if(aimMode){
+            set_Throw_Mode(otherPlayer);
+            // otherPlayer.setVelocity(.707 * throwForce, .707 * -throwForce)
+            //this line of code takes the aim angle that the player has chosen and launches the other player that direction.
+            otherPlayer.setVelocity(Math.sin(aimAngle * Math.PI / 180) * throwForce, Math.cos(aimAngle * Math.PI / 180) * -throwForce);
+        }
     }
     //end throw test.
 
-    //this is a sequence of conditionals that moves the player left and riht
+    //Testing shift to switch modes between moving and aiming
+    if(Phaser.Input.Keyboard.JustDown(Shiftkey)){
+        console.log('testing shift');
+        aimMode = !aimMode;
+    }
+    //end aim mode test
+
+    //this is a sequence of conditionals that moves the player left and right or aims  depending on aim mode
     if (cursors.left.isDown) {
+        if(!aimMode){
+            currentPlayer.setVelocityX(-160);
+            currentPlayer.anims.play('run', true);
+            currentPlayer.flipX = true;
+        }
+        else{
+            aimAngle += aimRotateSpeed;
+            console.log('aimaing:', aimAngle);
+        }
         // horMov = -1;
-        currentPlayer.setVelocityX(-160);
-        currentPlayer.anims.play('run', true);
-        currentPlayer.flipX = true;
     }
     else if (cursors.right.isDown) {
+        if(!aimMode){
+            currentPlayer.setVelocityX(160);
+            currentPlayer.anims.play('run', true);
+            currentPlayer.flipX = false;
+        }
+        else{
+            aimAngle -= aimRotateSpeed;
+            console.log('aimAngle:', aimAngle);
+        }
         // horMov = 1;
-        currentPlayer.setVelocityX(160);
-        currentPlayer.anims.play('run', true);
-        currentPlayer.flipX = false;
     }
     else {
         // horMov = 0;
